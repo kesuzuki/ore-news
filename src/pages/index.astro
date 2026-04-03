@@ -1,0 +1,85 @@
+---
+import { fetchAndParseData } from '../utils/fetchData';
+
+const topArticles = await fetchAndParseData();
+---
+
+<html lang="ja">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<meta name="generator" content={Astro.generator} />
+		<title>5ch Momentum</title>
+		<style>
+			body {
+				margin: 0;
+				padding: 2px 4px;
+				background-color: #ffffff;
+				color: #000000;
+				font-family: sans-serif;
+			}
+			
+			.container {
+				display: flex;
+				flex-direction: column;
+			}
+			
+			.article {
+				padding: 2px 0;
+				display: flex;
+				justify-content: space-between;
+				align-items: baseline;
+				gap: 8px;
+			}
+			
+			.left {
+				display: flex;
+				align-items: baseline;
+				gap: 6px;
+				flex: 1;
+				min-width: 0;
+			}
+			
+			.momentum {
+				font-weight: bold;
+				color: #d32f2f;
+			}
+			
+			.title {
+				flex: 1;
+				min-width: 0;
+				font-weight: bold;
+				font-size: 14px;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+			
+			.right {
+				font-size: 12px;
+				color: #444444;
+				white-space: nowrap;
+				flex-shrink: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			{topArticles.map((article, index) => (
+				<div class="article">
+					<div class="left">
+						<span class="momentum">{article.momentum}</span>
+						<span class="title">{article.title}</span>
+					</div>
+					<div class="right">
+						<span class="datetime">{article.dateTime.substring(5, 16).replace('-', '/')}</span>
+					</div>
+				</div>
+			))}
+			{topArticles.length === 0 && (
+				<p style="text-align:center; margin-top: 20px;">記事がありません。</p>
+			)}
+		</div>
+	</body>
+</html>
