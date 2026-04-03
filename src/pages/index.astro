@@ -2,6 +2,17 @@
 import { fetchAndParseData } from '../utils/fetchData';
 
 const topArticles = await fetchAndParseData();
+
+const formatDate = (unixTime: number) => {
+	const d = new Date(unixTime * 1000 + 9 * 3600 * 1000);
+	const m = d.getUTCMonth() + 1;
+	const date = d.getUTCDate();
+	const h = String(d.getUTCHours()).padStart(2, '0');
+	const min = String(d.getUTCMinutes()).padStart(2, '0');
+	const days = ['日', '月', '火', '水', '木', '金', '土'];
+	const dayName = days[d.getUTCDay()];
+	return `${m}/${date}(${dayName}) ${h}:${min}`;
+};
 ---
 
 <html lang="ja">
@@ -14,7 +25,7 @@ const topArticles = await fetchAndParseData();
 		<style>
 			body {
 				margin: 0;
-				padding: 2px 4px;
+				padding: 0;
 				background-color: #ffffff;
 				color: #000000;
 				font-family: sans-serif;
@@ -27,7 +38,7 @@ const topArticles = await fetchAndParseData();
 			}
 			
 			.article {
-				padding: 2px 0;
+				padding: 2px 4px;
 				display: flex;
 				justify-content: space-between;
 				align-items: baseline;
@@ -43,6 +54,7 @@ const topArticles = await fetchAndParseData();
 			}
 			
 			.momentum {
+				font-weight: normal;
 			}
 			.momentum.hot {
 				color: #d32f2f;
@@ -54,6 +66,7 @@ const topArticles = await fetchAndParseData();
 			.title {
 				flex: 1;
 				min-width: 0;
+				font-size: 18px;
 				white-space: nowrap;
 				overflow: hidden;
 				text-overflow: ellipsis;
@@ -63,6 +76,65 @@ const topArticles = await fetchAndParseData();
 				color: #444444;
 				white-space: nowrap;
 				flex-shrink: 0;
+				font-size: 18px;
+			}
+
+			/* モバイル向けメタ情報のデフォルト非表示（800px以上） */
+			.mobile-meta, .mobile-title {
+				display: none;
+			}
+
+			/* モバイル表示 (横800px未満) */
+			@media (max-width: 799px) {
+				.article {
+					flex-direction: column;
+					align-items: stretch;
+					padding: 8px 10px;
+					gap: 4px;
+					border-bottom: 1px solid #eeeeee;
+				}
+				
+				/* デスクトップ用レイアウトを隠す */
+				.left, .right {
+					display: none;
+				}
+
+				.mobile-title {
+					display: block;
+					font-size: 18px;
+					line-height: 1.4;
+					margin-bottom: 2px;
+				}
+
+				.mobile-meta {
+					display: flex;
+					justify-content: space-between;
+					align-items: baseline;
+					font-size: 14px;
+					color: #999999;
+				}
+
+				.meta-left {
+					display: flex;
+					gap: 8px;
+					overflow: hidden;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+				}
+
+				.meta-right {
+					display: flex;
+					gap: 12px;
+					flex-shrink: 0;
+				}
+
+				.m-momentum {
+					font-weight: bold;
+					color: #d32f2f;
+				}
+				.m-momentum.normal {
+					color: #555555;
+				}
 			}
 		</style>
 	</head>
@@ -70,6 +142,7 @@ const topArticles = await fetchAndParseData();
 		<div class="container">
 			{topArticles.map((article, index) => (
 				<div class="article">
+					{/* デスクトップ表示用 (800px以上) */}
 					<div class="left">
 						<span class={`momentum ${article.momentum >= 10000 ? 'hot' : 'normal'}`}>
 							{article.momentum.toString().slice(-4).padStart(4, '0')}
@@ -77,7 +150,22 @@ const topArticles = await fetchAndParseData();
 						<span class="title">{article.title}</span>
 					</div>
 					<div class="right">
-						<span class="datetime">{article.dateTime.substring(5, 16).replace('-', '/')}</span>
+						<span class="datetime">{formatDate(article.unixTime)}</span>
+					</div>
+
+					{/* モバイル表示用 (800px未満) */}
+					<div class="mobile-title">
+						{article.title}
+					</div>
+					<div class="mobile-meta">
+						<div class="meta-left">
+							<span>{formatDate(article.unixTime)}</span>
+							<span class="submitter">{article.submitter}</span>
+						</div>
+						<div class="meta-right">
+							<span class="comments">{article.commentCount}</span>
+							<span class={`m-momentum ${article.momentum >= 10000 ? 'hot' : 'normal'}`}>{article.momentum}</span>
+						</div>
 					</div>
 				</div>
 			))}
