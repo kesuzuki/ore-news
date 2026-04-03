@@ -10,7 +10,7 @@ export interface Article {
 }
 
 export async function fetchAndParseData(): Promise<Article[]> {
-  const url = 'https://asahi.5ch.io/newsplus/subject.txt';
+  const url = import.meta.env.SOURCE_URL || 'https://asahi.5ch.io/newsplus/subject.txt';
   const response = await fetch(url);
   const arrayBuffer = await response.arrayBuffer();
   
