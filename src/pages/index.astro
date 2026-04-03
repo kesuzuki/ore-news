@@ -18,6 +18,7 @@ const topArticles = await fetchAndParseData();
 				background-color: #ffffff;
 				color: #000000;
 				font-family: sans-serif;
+				font-size: 18px;
 			}
 			
 			.container {
@@ -42,22 +43,23 @@ const topArticles = await fetchAndParseData();
 			}
 			
 			.momentum {
-				font-weight: bold;
+			}
+			.momentum.hot {
 				color: #d32f2f;
+			}
+			.momentum.normal {
+				color: #555555;
 			}
 			
 			.title {
 				flex: 1;
 				min-width: 0;
-				font-weight: bold;
-				font-size: 14px;
 				white-space: nowrap;
 				overflow: hidden;
 				text-overflow: ellipsis;
 			}
 			
 			.right {
-				font-size: 12px;
 				color: #444444;
 				white-space: nowrap;
 				flex-shrink: 0;
@@ -69,7 +71,9 @@ const topArticles = await fetchAndParseData();
 			{topArticles.map((article, index) => (
 				<div class="article">
 					<div class="left">
-						<span class="momentum">{article.momentum}</span>
+						<span class={`momentum ${article.momentum >= 10000 ? 'hot' : 'normal'}`}>
+							{article.momentum.toString().slice(-4).padStart(4, '0')}
+						</span>
 						<span class="title">{article.title}</span>
 					</div>
 					<div class="right">
