@@ -4,13 +4,17 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: '57 */2 * * *' # 2h枚57分に実行
+    - cron: "57 */2 * * *" # 2h枚57分に実行
   workflow_dispatch: # 手動実行を許可
 
 permissions:
   contents: read
   pages: write
   id-token: write
+
+env:
+  # これを追加することで、ActionをNode.js 24上で動かすよう強制します
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
@@ -21,7 +25,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
       - name: Install dependencies
         run: npm install
       - name: Build Astro
